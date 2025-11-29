@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     std::cout << "Hello, World!" << std::endl;
 
-    CLI::App app{"A simple HTTP server"};
+    CLI::App app{"Lib Call: A simple tool to call dynamic libraries using JSON."};
 
     uint16_t port = 4221;
     size_t threads = 10;
