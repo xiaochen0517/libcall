@@ -1,6 +1,8 @@
 {
   "dependencies": [
     "catch2",
-    "cli11"
+    "cli11",
+    "libffi",
+    "nlohmann-json"
   ]
 }
