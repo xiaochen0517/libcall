@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Build and Debug",
+      "type": "codelldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/libcall",
+      "args": [],
+      "environment": [],
+      "preLaunchTask": "build",
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb"
+    },
+    {
+      "name": "Debug Only (No Build)",
+      "type": "codelldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/libcall",
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb"
+    }
+  ]
+}
