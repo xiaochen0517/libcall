@@ -6,7 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "adapter/libcall_type.hpp"
 #include "adapter/runner.hpp"
+#include "adapter/type_registry.hpp"
+#include "types/json_type.hpp"
 
 Runner Runner::create()
 {
@@ -56,13 +59,49 @@ void Runner::run()
      * 动态测试（存放测试数据）
      */
 
-    this->ffi_types_.push_back(&ffi_type_pointer);
-    this->ffi_types_.push_back(&ffi_type_pointer);
+    FFITypeRegistry type_registry;
 
-    void *format_ptr = mallocDataPtr("char_str", "Hello %s from ffi!\n");
-    this->ffi_values_.push_back(&format_ptr);
-    void *msg_ptr = mallocDataPtr("char_str", "MyLibCall");
-    this->ffi_values_.push_back(&msg_ptr);
+    BaseParamData formatParamData = BaseParamData{
+        .label_name = "format",
+        .type_name = "cstring",
+        .data = nlohmann::json("Hello %s from ffi!\n"),
+    };
+    BaseParamData msgParamData = BaseParamData{
+        .label_name = "msg",
+        .type_name = "cstring",
+        .data = nlohmann::json("MyLibCall"),
+    };
+
+    LCTypeInfo formatTypeInfo = FFITypeRegistry::parse(formatParamData);
+    LCTypeInfo msgTypeInfo = FFITypeRegistry::parse(msgParamData);
+
+    type_registry.registerData(std::vector<LCTypeInfo>{formatTypeInfo, msgTypeInfo});
+
+    std::vector<std::string> param_labels = {"format", "msg"};
+
+    for (const std::string &param_label : param_labels)
+    {
+        LCTypeInfo lc_type_info = type_registry.getBaseTypeInfo(param_label);
+        this->ffi_types_.push_back(lc_type_info.getFFITypePtr());
+        this->ffi_values_.push_back(lc_type_info.getDoubleDataPtr());
+    }
+
+    std::cout << "FFI Types Size: " << this->ffi_types_.size() << std::endl;
+    std::cout << "FFI Values Size: " << this->ffi_values_.size() << std::endl;
+
+    for (void *ffi_value_ptr : this->ffi_values_)
+    {
+        std::cout << "FFI Value Ptr: " << ffi_value_ptr << std::endl;
+        printf("FFI Value Content: %s\n", *(char **)ffi_value_ptr);
+    }
+
+    // this->ffi_types_.push_back(&ffi_type_pointer);
+    // this->ffi_types_.push_back(&ffi_type_pointer);
+    //
+    // void *format_ptr = mallocDataPtr("char_str", "Hello %s from ffi!\n");
+    // this->ffi_values_.push_back(&format_ptr);
+    // void *msg_ptr = mallocDataPtr("char_str", "MyLibCall");
+    // this->ffi_values_.push_back(&msg_ptr);
 
     this->ffi_return_type_ = &ffi_type_sint;
     this->return_value_ptr_ = mallocDataPtr("int32", "0");
@@ -84,7 +123,5 @@ void Runner::run()
     std::cout << "Return value: " << *static_cast<ffi_arg *>(this->return_value_ptr_) << std::endl;
 
     // release resources
-    free(format_ptr);
-    free(msg_ptr);
     free(this->return_value_ptr_);
 }

@@ -3,12 +3,12 @@
   "configurations": [
     {
       "name": "Build and Debug",
-      "type": "codelldb",
+      "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/libcall",
       "args": [],
       "environment": [],
-      "preLaunchTask": "build",
+      "preLaunchTask": "Build Project",
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,
       "externalConsole": false,
@@ -17,7 +17,7 @@
     },
     {
       "name": "Debug Only (No Build)",
-      "type": "codelldb",
+      "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/libcall",
       "cwd": "${workspaceFolder}",
