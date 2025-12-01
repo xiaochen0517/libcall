@@ -16,12 +16,12 @@
       "miDebuggerPath": "/usr/bin/gdb"
     },
     {
-      "name": "Debug Only (No Build)",
+      "name": "Debug Only",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/build/libcall",
       "cwd": "${workspaceFolder}",
       "MIMode": "gdb"
-    }
+    },
   ]
 }
