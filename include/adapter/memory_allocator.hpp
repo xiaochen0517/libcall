@@ -13,8 +13,8 @@ class MemoryAllocator
     MemoryAllocator() {};
     ~MemoryAllocator() {};
 
-    static void *mallocate(const TypeInfo &type_info, const BaseParamData &base_param_data);
-    static void *mallocate(const TypeInfo &type_info, const StructParamData &struct_param_data);
+    static void *mallocate(const TypeInfo &type_info, const BaseTypeData &base_param_data);
+    static void *mallocate(const TypeInfo &type_info, const StructTypeData &struct_param_data);
 
     static void *getDoublePointer(void *data_ptr);
 

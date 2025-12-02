@@ -3,15 +3,17 @@
 
 #include <nlohmann/json.hpp>
 
+#include "types/json_type.hpp"
+
 using json = nlohmann::json;
 
-void parser_func();
-
-class Parser
+class JsonParser
 {
   public:
-    Parser() {};
-    ~Parser() {};
+    JsonParser() {};
+    ~JsonParser() {};
+
+    static RootData parse();
 };
 
 #endif // LIBCALL_PARSER_HPP

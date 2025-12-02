@@ -19,11 +19,13 @@ class FFITypeRegistry
     FFITypeRegistry() {};
     ~FFITypeRegistry() {};
 
-    static LCTypeInfo parse(BaseParamData &base_param_data);
-    static LCStructTypeInfo parse(StructParamData &struct_param_data);
+    static LCTypeInfo parse(BaseTypeData &base_param_data);
+    static LCStructTypeInfo parse(StructTypeData &struct_param_data);
+    static LCLibInfo parse(LibDataInfo &lib_data_info);
 
     void registerData(std::vector<LCTypeInfo> lc_type_list);
-    void registerData(std::vector<LCStructTypeInfo> &lc_struct_type_list);
+    void registerData(std::vector<LCStructTypeInfo> lc_struct_type_list);
+    void registerData(std::vector<LCLibInfo> lc_lib_list);
 
     LCTypeInfo getBaseTypeInfo(const std::string &label_name)
     {
@@ -33,10 +35,15 @@ class FFITypeRegistry
     {
         return this->struct_type_info_map_.at(label_name);
     }
+    LCLibInfo getLibInfo(const std::string &label_name)
+    {
+        return this->lib_info_map_.at(label_name);
+    }
 
   private:
     std::unordered_map<std::string, LCTypeInfo> base_type_info_map_;
     std::unordered_map<std::string, LCStructTypeInfo> struct_type_info_map_;
+    std::unordered_map<std::string, LCLibInfo> lib_info_map_;
 };
 
 #endif // LIBCALL_TYPE_REGISTRY_HPP

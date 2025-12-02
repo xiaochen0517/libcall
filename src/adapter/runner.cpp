@@ -3,10 +3,14 @@
 #include <dlfcn.h>
 #include <ffi.h>
 #include <iostream>
+#include <ranges>
+#include <stdexcept>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 #include "adapter/libcall_type.hpp"
+#include "adapter/parser.hpp"
 #include "adapter/runner.hpp"
 #include "adapter/type_registry.hpp"
 #include "types/json_type.hpp"
@@ -46,27 +50,17 @@ void *mallocDataPtr(const std::string &type, const std::string &value)
 
 void Runner::run()
 {
-    // 加载动态库
-    void *handle = dlopen("/usr/lib/x86_64-linux-gnu/libc.so.6", RTLD_NOW);
-    if (handle == nullptr)
-    {
-        std::cerr << "Failed to load libc.so: " << dlerror() << std::endl;
-        return;
-    }
-    void *printf_sym = dlsym(handle, "printf");
 
-    /*
-     * 动态测试（存放测试数据）
-     */
+    RootData root_data = JsonParser::parse();
 
     FFITypeRegistry type_registry;
 
-    BaseParamData formatParamData = BaseParamData{
+    BaseTypeData formatParamData = BaseTypeData{
         .label_name = "format",
         .type_name = "cstring",
         .data = nlohmann::json("Hello %s from ffi!\n"),
     };
-    BaseParamData msgParamData = BaseParamData{
+    BaseTypeData msgParamData = BaseTypeData{
         .label_name = "msg",
         .type_name = "cstring",
         .data = nlohmann::json("MyLibCall"),
@@ -76,6 +70,33 @@ void Runner::run()
     LCTypeInfo msgTypeInfo = FFITypeRegistry::parse(msgParamData);
 
     type_registry.registerData(std::vector<LCTypeInfo>{formatTypeInfo, msgTypeInfo});
+
+    std::vector<LCLibInfo> lc_lib_info_list;
+    for (LibDataInfo &lib_data_info : root_data.libs)
+    {
+        LCLibInfo lib_info = FFITypeRegistry::parse(lib_data_info);
+        std::cout << "Lib label: " << lib_info.getLabelName() << ", path: " << lib_info.getLibPath()
+                  << ", handle: " << lib_info.getLibHandle() << std::endl;
+        lc_lib_info_list.push_back(lib_info);
+    }
+    type_registry.registerData(lc_lib_info_list);
+
+    // 加载动态库
+    // void *handle = dlopen("/usr/lib/x86_64-linux-gnu/libc.so.6", RTLD_NOW);
+    // if (handle == nullptr)
+    // {
+    //     std::cerr << "Failed to load libc.so: " << dlerror() << std::endl;
+    //     return;
+    // }
+    LCLibInfo glibc_info = type_registry.getLibInfo("glibc");
+    std::cout << "Lib Path: " << glibc_info.getLibPath() << std::endl;
+    std::cout << "Lib Handle: " << glibc_info.getLibHandle() << std::endl;
+
+    void *printf_sym = dlsym(glibc_info.getLibHandle(), "printf");
+
+    /*
+     * 动态测试（存放测试数据）
+     */
 
     std::vector<std::string> param_labels = {"format", "msg"};
 
@@ -112,9 +133,7 @@ void Runner::run()
 
     if (ffi_prep_cif_var(&this->cif_, FFI_DEFAULT_ABI, 1, 2, this->ffi_return_type_, this->ffi_types_.data()) != FFI_OK)
     {
-        std::cerr << "ffi_prep_cif failed" << std::endl;
-        dlclose(handle);
-        return;
+        throw std::runtime_error("ffi_prep_cif failed");
     }
 
     std::cout << "ffi prep cif success" << std::endl;

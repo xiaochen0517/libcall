@@ -11,9 +11,11 @@
 class LCTypeInfo
 {
   public:
-    LCTypeInfo(std::string type_name_, std::string label_name_, ffi_type *ffi_type_ptr_, void *data_ptr_, void *double_data_ptr_)
-        : type_name_(type_name_), label_name_(label_name_), ffi_type_ptr_(ffi_type_ptr_), data_ptr_(data_ptr_), double_data_ptr_(double_data_ptr_) {};
-    ~LCTypeInfo(){};
+    LCTypeInfo(std::string type_name_, std::string label_name_, ffi_type *ffi_type_ptr_, void *data_ptr_,
+               void *double_data_ptr_)
+        : type_name_(type_name_), label_name_(label_name_), ffi_type_ptr_(ffi_type_ptr_), data_ptr_(data_ptr_),
+          double_data_ptr_(double_data_ptr_) {};
+    ~LCTypeInfo() {};
 
     std::string getTypeName() const
     {
@@ -73,6 +75,32 @@ class LCStructTypeInfo
     std::string label_name_;
     std::vector<ffi_type *> ffi_type_ptr_list_;
     std::vector<void *> data_ptr_test_;
+};
+
+class LCLibInfo
+{
+  public:
+    LCLibInfo(std::string label_name_, std::string lib_path_, void *lib_handle_)
+        : label_name_(label_name_), lib_path_(lib_path_), lib_handle_(lib_handle_) {};
+    ~LCLibInfo() {};
+
+    std::string getLabelName() const
+    {
+        return label_name_;
+    };
+    std::string getLibPath() const
+    {
+        return lib_path_;
+    };
+    void *getLibHandle() const
+    {
+        return lib_handle_;
+    };
+
+  private:
+    std::string label_name_;
+    std::string lib_path_;
+    void *lib_handle_;
 };
 
 #endif // LIBCALL_TYPE_HPP

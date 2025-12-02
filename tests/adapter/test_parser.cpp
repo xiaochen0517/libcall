@@ -6,6 +6,6 @@ TEST_CASE("Test parser json file load and parse", "[method]")
 {
     SECTION("Load file and parse")
     {
-        parser_func();
+        JsonParser::parse();
     }
 }

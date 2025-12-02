@@ -6,7 +6,7 @@
 
 #include "adapter/memory_allocator.hpp"
 
-void *MemoryAllocator::mallocate(const TypeInfo &type_info, const BaseParamData &base_param_data)
+void *MemoryAllocator::mallocate(const TypeInfo &type_info, const BaseTypeData &base_param_data)
 {
     nlohmann::json data = base_param_data.data;
     if (data.is_number())
@@ -48,7 +48,7 @@ void *MemoryAllocator::mallocate(const TypeInfo &type_info, const BaseParamData 
         return nullptr;
     }
 }
-void *MemoryAllocator::mallocate(const TypeInfo &type_info, const StructParamData &struct_param_data)
+void *MemoryAllocator::mallocate(const TypeInfo &type_info, const StructTypeData &struct_param_data)
 {
     return nullptr;
 }

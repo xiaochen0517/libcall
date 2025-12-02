@@ -1,3 +1,38 @@
 {
-  "name": "test name"
+  "base_types": [
+    {
+      "label_name": "format",
+      "type_name": "cstring",
+      "data": "Hello from %s!\n"
+    },
+    {
+      "label_name": "name",
+      "type_name": "cstring",
+      "data": "mas0n1ee"
+    },
+    {
+      "label_name": "print_return",
+      "type_name": "int32",
+      "data": 0
+    }
+  ],
+  "struct_types": [],
+  "callbacks": [],
+  "libs": [
+    {
+      "label_name": "glibc",
+      "lib_path": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+    }
+  ],
+  "func_calls": [
+    {
+      "lib_label": "glibc",
+      "func_name": "printf",
+      "param_labels": [
+        "format",
+        "name"
+      ],
+      "return_label": "print_return"
+    }
+  ]
 }
