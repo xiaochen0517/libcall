@@ -8,14 +8,14 @@
 /**
  * 调用类型
  */
-class LCTypeInfo
+class LCBaseTypeInfo
 {
   public:
-    LCTypeInfo(std::string type_name_, std::string label_name_, ffi_type *ffi_type_ptr_, void *data_ptr_,
-               void *double_data_ptr_)
+    LCBaseTypeInfo(std::string type_name_, std::string label_name_, ffi_type *ffi_type_ptr_, void *data_ptr_,
+                   void *double_data_ptr_)
         : type_name_(type_name_), label_name_(label_name_), ffi_type_ptr_(ffi_type_ptr_), data_ptr_(data_ptr_),
           double_data_ptr_(double_data_ptr_) {};
-    ~LCTypeInfo() {};
+    ~LCBaseTypeInfo() {};
 
     std::string getTypeName() const
     {
@@ -101,6 +101,44 @@ class LCLibInfo
     std::string label_name_;
     std::string lib_path_;
     void *lib_handle_;
+};
+
+class LCFuncCallInfo
+{
+  public:
+    LCFuncCallInfo(std::string label_name_, std::string lib_label_, std::string func_name_,
+                   std::vector<std::string> param_labels_, std::string return_label_)
+        : label_name_(label_name_), lib_label_(lib_label_), func_name_(func_name_), param_labels_(param_labels_),
+          return_label_(return_label_) {};
+    ~LCFuncCallInfo() {};
+
+    std::string getLabelName() const
+    {
+        return label_name_;
+    };
+    std::string getLibLabel() const
+    {
+        return lib_label_;
+    };
+    std::string getFuncName() const
+    {
+        return func_name_;
+    };
+    std::vector<std::string> getParamLabels() const
+    {
+        return param_labels_;
+    };
+    std::string getReturnLabel() const
+    {
+        return return_label_;
+    };
+
+  private:
+    std::string label_name_;
+    std::string lib_label_;
+    std::string func_name_;
+    std::vector<std::string> param_labels_;
+    std::string return_label_;
 };
 
 #endif // LIBCALL_TYPE_HPP

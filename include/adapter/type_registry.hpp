@@ -19,31 +19,54 @@ class FFITypeRegistry
     FFITypeRegistry() {};
     ~FFITypeRegistry() {};
 
-    static LCTypeInfo parse(BaseTypeData &base_param_data);
+    static LCBaseTypeInfo parse(BaseTypeData &base_param_data);
     static LCStructTypeInfo parse(StructTypeData &struct_param_data);
     static LCLibInfo parse(LibDataInfo &lib_data_info);
+    static LCFuncCallInfo parse(FuncCallDataInfo &func_call_data_info);
 
-    void registerData(std::vector<LCTypeInfo> lc_type_list);
+    void registerData(std::vector<LCBaseTypeInfo> lc_type_list);
     void registerData(std::vector<LCStructTypeInfo> lc_struct_type_list);
     void registerData(std::vector<LCLibInfo> lc_lib_list);
+    void registerData(std::vector<LCFuncCallInfo> lc_func_call_list);
 
-    LCTypeInfo getBaseTypeInfo(const std::string &label_name)
+    LCBaseTypeInfo getBaseTypeInfo(const std::string &label_name)
     {
+        if (this->base_type_info_map_.find(label_name) == this->base_type_info_map_.end())
+        {
+            throw std::runtime_error("Base label name not found: " + label_name);
+        }
         return this->base_type_info_map_.at(label_name);
     }
     LCStructTypeInfo getStructTypeInfo(const std::string &label_name)
     {
+        if (this->struct_type_info_map_.find(label_name) == this->struct_type_info_map_.end())
+        {
+            throw std::runtime_error("Struct label name not found: " + label_name);
+        }
         return this->struct_type_info_map_.at(label_name);
     }
     LCLibInfo getLibInfo(const std::string &label_name)
     {
+        if (this->lib_info_map_.find(label_name) == this->lib_info_map_.end())
+        {
+            throw std::runtime_error("Lib label name not found: " + label_name);
+        }
         return this->lib_info_map_.at(label_name);
+    }
+    LCFuncCallInfo getFuncCallInfo(const std::string &label_name)
+    {
+        if (this->func_call_info_map_.find(label_name) == this->func_call_info_map_.end())
+        {
+            throw std::runtime_error("Func call label name not found: " + label_name);
+        }
+        return this->func_call_info_map_.at(label_name);
     }
 
   private:
-    std::unordered_map<std::string, LCTypeInfo> base_type_info_map_;
+    std::unordered_map<std::string, LCBaseTypeInfo> base_type_info_map_;
     std::unordered_map<std::string, LCStructTypeInfo> struct_type_info_map_;
     std::unordered_map<std::string, LCLibInfo> lib_info_map_;
+    std::unordered_map<std::string, LCFuncCallInfo> func_call_info_map_;
 };
 
 #endif // LIBCALL_TYPE_REGISTRY_HPP

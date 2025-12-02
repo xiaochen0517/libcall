@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <dlfcn.h>
 #include <ffi.h>
+#include <format>
 #include <iostream>
 #include <ranges>
 #include <stdexcept>
@@ -55,21 +56,15 @@ void Runner::run()
 
     FFITypeRegistry type_registry;
 
-    BaseTypeData formatParamData = BaseTypeData{
-        .label_name = "format",
-        .type_name = "cstring",
-        .data = nlohmann::json("Hello %s from ffi!\n"),
-    };
-    BaseTypeData msgParamData = BaseTypeData{
-        .label_name = "msg",
-        .type_name = "cstring",
-        .data = nlohmann::json("MyLibCall"),
-    };
-
-    LCTypeInfo formatTypeInfo = FFITypeRegistry::parse(formatParamData);
-    LCTypeInfo msgTypeInfo = FFITypeRegistry::parse(msgParamData);
-
-    type_registry.registerData(std::vector<LCTypeInfo>{formatTypeInfo, msgTypeInfo});
+    std::vector<LCBaseTypeInfo> lc_base_type_info_list;
+    for (BaseTypeData base_type_data : root_data.base_types)
+    {
+        LCBaseTypeInfo lc_type_info = FFITypeRegistry::parse(base_type_data);
+        std::cout << "Base label: " << lc_type_info.getLabelName() << ", type: " << lc_type_info.getTypeName()
+                  << std::endl;
+        lc_base_type_info_list.push_back(lc_type_info);
+    }
+    type_registry.registerData(lc_base_type_info_list);
 
     std::vector<LCLibInfo> lc_lib_info_list;
     for (LibDataInfo &lib_data_info : root_data.libs)
@@ -81,66 +76,67 @@ void Runner::run()
     }
     type_registry.registerData(lc_lib_info_list);
 
-    // 加载动态库
-    // void *handle = dlopen("/usr/lib/x86_64-linux-gnu/libc.so.6", RTLD_NOW);
-    // if (handle == nullptr)
-    // {
-    //     std::cerr << "Failed to load libc.so: " << dlerror() << std::endl;
-    //     return;
-    // }
-    LCLibInfo glibc_info = type_registry.getLibInfo("glibc");
-    std::cout << "Lib Path: " << glibc_info.getLibPath() << std::endl;
-    std::cout << "Lib Handle: " << glibc_info.getLibHandle() << std::endl;
-
-    void *printf_sym = dlsym(glibc_info.getLibHandle(), "printf");
+    std::vector<LCFuncCallInfo> lc_func_call_info_list;
+    for (FuncCallDataInfo &func_call_data_info : root_data.func_calls)
+    {
+        LCFuncCallInfo func_call_info = FFITypeRegistry::parse(func_call_data_info);
+        std::cout << "Func call label: " << func_call_info.getLabelName()
+                  << ", lib label: " << func_call_info.getLibLabel() << ", func name: " << func_call_info.getFuncName()
+                  << std::endl;
+        lc_func_call_info_list.push_back(func_call_info);
+    }
+    type_registry.registerData(lc_func_call_info_list);
 
     /*
      * 动态测试（存放测试数据）
      */
 
-    std::vector<std::string> param_labels = {"format", "msg"};
-
-    for (const std::string &param_label : param_labels)
+    for (LCFuncCallInfo func_call_info : lc_func_call_info_list)
     {
-        LCTypeInfo lc_type_info = type_registry.getBaseTypeInfo(param_label);
-        this->ffi_types_.push_back(lc_type_info.getFFITypePtr());
-        this->ffi_values_.push_back(lc_type_info.getDoubleDataPtr());
+        std::cout << "Function Call Info: " << func_call_info.getFuncName() << std::endl;
+        LCLibInfo glibc_info = type_registry.getLibInfo(func_call_info.getLibLabel());
+        void *printf_sym = dlsym(glibc_info.getLibHandle(), func_call_info.getFuncName().c_str());
+        if (printf_sym == nullptr)
+        {
+            throw std::runtime_error(
+                std::format("Execute function: {} error because failed to get symbol: {} from library: {}",
+                            func_call_info.getLabelName(), func_call_info.getFuncName(), glibc_info.getLibPath()));
+        }
+        for (const std::string &param_label : func_call_info.getParamLabels())
+        {
+            LCBaseTypeInfo lc_type_info = type_registry.getBaseTypeInfo(param_label);
+            this->ffi_types_.push_back(lc_type_info.getFFITypePtr());
+            this->ffi_values_.push_back(lc_type_info.getDoubleDataPtr());
+        }
+
+        std::cout << "FFI Types Size: " << this->ffi_types_.size() << std::endl;
+        std::cout << "FFI Values Size: " << this->ffi_values_.size() << std::endl;
+
+        for (void *ffi_value_ptr : this->ffi_values_)
+        {
+            std::cout << "FFI Value Ptr: " << ffi_value_ptr << std::endl;
+            printf("FFI Value Content: %s\n", *(char **)ffi_value_ptr);
+        }
+
+        LCBaseTypeInfo result_base_type = type_registry.getBaseTypeInfo(func_call_info.getReturnLabel());
+        this->ffi_return_type_ = result_base_type.getFFITypePtr();
+        this->return_value_ptr_ = result_base_type.getDataPtr();
+
+        /*
+         * 开始调用
+         */
+
+        if (ffi_prep_cif_var(&this->cif_, FFI_DEFAULT_ABI, 1, 2, this->ffi_return_type_, this->ffi_types_.data()) !=
+            FFI_OK)
+        {
+            throw std::runtime_error("ffi_prep_cif failed");
+        }
+
+        std::cout << "ffi prep cif success" << std::endl;
+
+        ffi_call(&this->cif_, FFI_FN(printf), this->return_value_ptr_, ffi_values_.data());
+        std::cout << "Return value: " << *static_cast<ffi_arg *>(this->return_value_ptr_) << std::endl;
     }
-
-    std::cout << "FFI Types Size: " << this->ffi_types_.size() << std::endl;
-    std::cout << "FFI Values Size: " << this->ffi_values_.size() << std::endl;
-
-    for (void *ffi_value_ptr : this->ffi_values_)
-    {
-        std::cout << "FFI Value Ptr: " << ffi_value_ptr << std::endl;
-        printf("FFI Value Content: %s\n", *(char **)ffi_value_ptr);
-    }
-
-    // this->ffi_types_.push_back(&ffi_type_pointer);
-    // this->ffi_types_.push_back(&ffi_type_pointer);
-    //
-    // void *format_ptr = mallocDataPtr("char_str", "Hello %s from ffi!\n");
-    // this->ffi_values_.push_back(&format_ptr);
-    // void *msg_ptr = mallocDataPtr("char_str", "MyLibCall");
-    // this->ffi_values_.push_back(&msg_ptr);
-
-    this->ffi_return_type_ = &ffi_type_sint;
-    this->return_value_ptr_ = mallocDataPtr("int32", "0");
-
-    /*
-     * 开始调用
-     */
-
-    if (ffi_prep_cif_var(&this->cif_, FFI_DEFAULT_ABI, 1, 2, this->ffi_return_type_, this->ffi_types_.data()) != FFI_OK)
-    {
-        throw std::runtime_error("ffi_prep_cif failed");
-    }
-
-    std::cout << "ffi prep cif success" << std::endl;
-
-    ffi_call(&this->cif_, FFI_FN(printf), this->return_value_ptr_, ffi_values_.data());
-    std::cout << "Return value: " << *static_cast<ffi_arg *>(this->return_value_ptr_) << std::endl;
-
     // release resources
     free(this->return_value_ptr_);
 }

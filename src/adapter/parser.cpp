@@ -84,6 +84,7 @@ std::vector<LibDataInfo> parseLibDataInfoList(std::set<std::string> &labels, con
 FuncCallDataInfo parseFuncCallDataInfo(const json &data)
 {
     FuncCallDataInfo func_call_data_info;
+    func_call_data_info.label_name = data.at("label_name").get<std::string>();
     func_call_data_info.lib_label = data.at("lib_label").get<std::string>();
     func_call_data_info.func_name = data.at("func_name").get<std::string>();
     func_call_data_info.param_labels = data.at("param_labels").get<std::vector<std::string>>();

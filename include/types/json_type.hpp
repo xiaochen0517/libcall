@@ -37,6 +37,7 @@ struct LibDataInfo
 // 函数调用信息
 struct FuncCallDataInfo
 {
+    std::string label_name;
     std::string lib_label;
     std::string func_name;
     std::vector<std::string> param_labels;

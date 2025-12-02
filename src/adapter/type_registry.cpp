@@ -1,4 +1,5 @@
 #include <dlfcn.h>
+#include <exception>
 #include <iostream>
 #include <stdexcept>
 
@@ -6,13 +7,13 @@
 #include "adapter/type_mapping.hpp"
 #include "adapter/type_registry.hpp"
 
-LCTypeInfo FFITypeRegistry::parse(BaseTypeData &base_param_data)
+LCBaseTypeInfo FFITypeRegistry::parse(BaseTypeData &base_param_data)
 {
     TypeInfo type_info = TypeMapping::getTypeInfo(base_param_data.type_name);
     void *data_ptr = MemoryAllocator::mallocate(type_info, base_param_data);
     void *double_data_ptr = MemoryAllocator::getDoublePointer(data_ptr);
-    return LCTypeInfo(base_param_data.type_name, base_param_data.label_name, type_info.ffi_type_ptr, data_ptr,
-                      double_data_ptr);
+    return LCBaseTypeInfo(base_param_data.type_name, base_param_data.label_name, type_info.ffi_type_ptr, data_ptr,
+                          double_data_ptr);
 }
 LCStructTypeInfo FFITypeRegistry::parse(StructTypeData &struct_param_data)
 {
@@ -29,10 +30,15 @@ LCLibInfo FFITypeRegistry::parse(LibDataInfo &lib_data_info)
     }
     return LCLibInfo(lib_data_info.label_name, lib_data_info.lib_path, handle);
 }
-
-void FFITypeRegistry::registerData(std::vector<LCTypeInfo> lc_type_list)
+LCFuncCallInfo FFITypeRegistry::parse(FuncCallDataInfo &func_call_data_info)
 {
-    for (const LCTypeInfo &lc_type_info : lc_type_list)
+    return LCFuncCallInfo(func_call_data_info.label_name, func_call_data_info.lib_label, func_call_data_info.func_name,
+                          func_call_data_info.param_labels, func_call_data_info.return_label);
+}
+
+void FFITypeRegistry::registerData(std::vector<LCBaseTypeInfo> lc_type_list)
+{
+    for (const LCBaseTypeInfo &lc_type_info : lc_type_list)
     {
         if (this->base_type_info_map_.find(lc_type_info.getLabelName()) != this->base_type_info_map_.end())
         {
@@ -64,5 +70,16 @@ void FFITypeRegistry::registerData(std::vector<LCLibInfo> lc_lib_list)
             throw std::runtime_error("Duplicate lib label name registration: " + lc_lib_info.getLabelName());
         }
         this->lib_info_map_.insert({lc_lib_info.getLabelName(), lc_lib_info});
+    }
+}
+void FFITypeRegistry::registerData(std::vector<LCFuncCallInfo> lc_func_call_list)
+{
+    for (const LCFuncCallInfo &lc_func_call_info : lc_func_call_list)
+    {
+        if (this->func_call_info_map_.find(lc_func_call_info.getFuncName()) != this->func_call_info_map_.end())
+        {
+            throw std::runtime_error("Duplicate func call label name registration: " + lc_func_call_info.getFuncName());
+        }
+        this->func_call_info_map_.insert({lc_func_call_info.getFuncName(), lc_func_call_info});
     }
 }

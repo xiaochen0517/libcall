@@ -26,6 +26,7 @@
   ],
   "func_calls": [
     {
+      "label_name": "print_hello",
       "lib_label": "glibc",
       "func_name": "printf",
       "param_labels": [
