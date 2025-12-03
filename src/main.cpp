@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "adapter/runner.hpp"
+#include "conf.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,8 @@ int main(int argc, char *argv[])
     std::cerr << std::unitbuf;
 
     std::cout << "Hello, World!" << std::endl;
+    std::cout << "Project name: " << PROJECT_NAME << std::endl;
+    std::cout << "Project description: " << PROJECT_DESCRIPTION << std::endl;
 
     CLI::App app{"Lib Call: A simple tool to call dynamic libraries using JSON."};
 

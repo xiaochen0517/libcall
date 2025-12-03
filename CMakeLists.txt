@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(libcall)
+project(libcall
+    VERSION 0.0.1
+    DESCRIPTION "Use JSON to call C functions dynamically."
+)
+
+configure_file(include/conf.hpp.in "${CMAKE_BINARY_DIR}/include/conf.hpp")
+
+message([DEBUG] "${CMAKE_BINARY_DIR}")
 
 # 设置默认构建类型为 Debug
 if(NOT CMAKE_BUILD_TYPE)
@@ -18,6 +25,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories(${CMAKE_BINARY_DIR}/include)
 
 find_package(Catch2 3 REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)

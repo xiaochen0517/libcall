@@ -14,4 +14,4 @@ if [ ! -f "${BUILD_DIR}/CMakeCache.txt" ]; then
     -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 fi
 
-cmake --build ${BUILD_DIR}
+cmake --build ${BUILD_DIR} -j 32
