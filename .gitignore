@@ -3,3 +3,5 @@
 build
 vcpkg_installed
 
+# test so library files are ignored
+*.so

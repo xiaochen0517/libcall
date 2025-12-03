@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <dlfcn.h>
 #include <iostream>
+#include <string>
 
 #include "adapter/runner.hpp"
 #include "conf.hpp"

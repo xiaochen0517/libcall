@@ -1,0 +1,26 @@
+{
+  "base_types": [
+    {
+      "label_name": "void_data",
+      "type_name": "void",
+      "data": null
+    }
+  ],
+  "struct_types": [],
+  "callbacks": [],
+  "libs": [
+    {
+      "label_name": "test_lib",
+      "lib_path": "./test_libs/base_type/test.so"
+    }
+  ],
+  "func_calls": [
+    {
+      "label_name": "call_none_arg_func",
+      "lib_label": "test_lib",
+      "func_name": "_Z18call_func_none_argv",
+      "param_labels": [],
+      "return_label": "void_data"
+    }
+  ]
+}
