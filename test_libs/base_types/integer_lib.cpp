@@ -2,5 +2,5 @@
 
 void void_void_func()
 {
-    std::cout << "Call 'call_func_none_arg'" << std::endl;
+    std::cout << "Call 'void void func'" << std::endl;
 }
