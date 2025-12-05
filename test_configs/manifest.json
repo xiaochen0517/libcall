@@ -1,0 +1,11 @@
+{
+  "name": "Dynamic libs test suite",
+  "test_suites": [
+    {
+      "name": "base_types",
+      "configs": [
+        "base_types/integer_test.json"
+      ]
+    }
+  ]
+}

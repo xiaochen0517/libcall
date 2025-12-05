@@ -1,0 +1,39 @@
+{
+  "base_types": [],
+  "struct_types": [
+    {
+      "label_name": "simple_struct",
+      "struct_data_list": [
+        {
+          "type": "base_type",
+          "type_name": "int32",
+          "data": 200
+        },
+        {
+          "type": "base_type",
+          "type_name": "int32",
+          "data": 300
+        }
+      ]
+    }
+  ],
+  "callbacks": [],
+  "libs": [
+    {
+      "label_name": "liblctest",
+      "lib_path": "./build/liblctest.so"
+    }
+  ],
+  "func_calls": [
+    {
+      "label_name": "print_hello",
+      "lib_label": "glibc",
+      "func_name": "printf",
+      "param_labels": [
+        "format",
+        "name"
+      ],
+      "return_label": "print_return"
+    }
+  ]
+}
