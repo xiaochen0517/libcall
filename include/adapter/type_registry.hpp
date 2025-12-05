@@ -16,8 +16,13 @@
 class FFITypeRegistry
 {
   public:
-    FFITypeRegistry() {};
     ~FFITypeRegistry() {};
+
+    static FFITypeRegistry getInstance()
+    {
+        static FFITypeRegistry instance;
+        return instance;
+    }
 
     static LCBaseTypeInfo parse(BaseTypeData &base_param_data);
     static LCStructTypeInfo parse(StructTypeData &struct_param_data);
@@ -63,6 +68,8 @@ class FFITypeRegistry
     }
 
   private:
+    FFITypeRegistry() {};
+
     std::unordered_map<std::string, LCBaseTypeInfo> base_type_info_map_;
     std::unordered_map<std::string, LCStructTypeInfo> struct_type_info_map_;
     std::unordered_map<std::string, LCLibInfo> lib_info_map_;

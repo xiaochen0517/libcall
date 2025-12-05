@@ -4,7 +4,6 @@
 #include <ffi.h>
 #include <format>
 #include <iostream>
-#include <ranges>
 #include <stdexcept>
 #include <stdio.h>
 #include <string.h>
@@ -54,7 +53,7 @@ void Runner::run()
 
     RootData root_data = JsonParser::parse();
 
-    FFITypeRegistry type_registry;
+    FFITypeRegistry type_registry = FFITypeRegistry::getInstance();
 
     std::vector<LCBaseTypeInfo> lc_base_type_info_list;
     for (BaseTypeData base_type_data : root_data.base_types)
