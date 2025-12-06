@@ -2,7 +2,13 @@
 #define LIBCALL_RUNNER_HPP
 
 #include <ffi.h>
+#include <string>
 #include <vector>
+
+struct RunParam
+{
+    std::string json_path;
+};
 
 class Runner
 {
@@ -12,7 +18,7 @@ class Runner
 
     static Runner create();
 
-    void run();
+    void run(RunParam &param);
 
   private:
     // FFI 参数类型数组

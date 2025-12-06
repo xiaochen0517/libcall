@@ -1,9 +1,11 @@
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <set>
 #include <vector>
 
 #include "adapter/parser.hpp"
+#include "logger/logger.hpp"
 #include "types/json_type.hpp"
 
 BaseTypeData parseBaseTypeData(const json &data)
@@ -13,11 +15,19 @@ BaseTypeData parseBaseTypeData(const json &data)
     if (base_type_data.label_name.empty())
     {
         std::cerr << "label_name is empty" << std::endl;
+        throw std::runtime_error("label_name is empty");
     }
-    base_type_data.type_name = data.at("type_name").get<std::string>();
-    if (base_type_data.type_name.empty())
+    base_type_data.type = data.at("type").get<std::string>();
+    if (base_type_data.type.empty())
     {
-        std::cerr << "type_name is empty" << std::endl;
+        std::cerr << "type is empty" << std::endl;
+        throw std::runtime_error("type is empty");
+    }
+    base_type_data.data_type = data.at("data_type").get<std::string>();
+    if (base_type_data.data_type.empty())
+    {
+        std::cerr << "data_type is empty" << std::endl;
+        throw std::runtime_error("data_type is empty");
     }
     base_type_data.data = data.at("data");
     return base_type_data;
@@ -87,6 +97,17 @@ FuncCallDataInfo parseFuncCallDataInfo(const json &data)
     func_call_data_info.label_name = data.at("label_name").get<std::string>();
     func_call_data_info.lib_label = data.at("lib_label").get<std::string>();
     func_call_data_info.func_name = data.at("func_name").get<std::string>();
+    func_call_data_info.variadic = data.at("variadic").get<bool>();
+    if (func_call_data_info.variadic)
+    {
+        func_call_data_info.fixed_param_count = data.at("fixed_param_count").get<uint32_t>();
+        if (func_call_data_info.fixed_param_count == 0)
+        {
+            std::cerr << "fixed_param_count is 0 for variadic function: " << func_call_data_info.label_name
+                      << std::endl;
+            throw std::runtime_error("fixed_param_count is 0 for variadic function");
+        }
+    }
     func_call_data_info.param_labels = data.at("param_labels").get<std::vector<std::string>>();
     func_call_data_info.return_label = data.at("return_label").get<std::string>();
     return func_call_data_info;
@@ -111,10 +132,20 @@ std::vector<FuncCallDataInfo> parseFuncCallDataInfoList(std::set<std::string> &l
     return func_call_data_info_list;
 }
 
-RootData JsonParser::parse()
+RootData JsonParser::parse(const std::string &json_path)
 {
-    std::ifstream file("test.json");
-    json data = json::parse(file);
+    json data;
+    try
+    {
+        std::ifstream file(json_path);
+        data = json::parse(file);
+    }
+    catch (const std::exception &)
+    {
+        // 读取或解析 JSON 文件失败
+        LOGGER.error(std::format("Failed to read or parse JSON file: {}", json_path));
+        throw std::runtime_error("Failed to read or parse JSON file");
+    }
 
     std::set<std::string> labels;
 

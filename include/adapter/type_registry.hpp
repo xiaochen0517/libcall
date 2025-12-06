@@ -1,6 +1,7 @@
 #ifndef LIBCALL_TYPE_REGISTRY_HPP
 #define LIBCALL_TYPE_REGISTRY_HPP
 
+#pragma once
 #include <ffi.h>
 #include <stdint.h>
 #include <string>
@@ -16,13 +17,14 @@
 class FFITypeRegistry
 {
   public:
-    ~FFITypeRegistry() {};
-
-    static FFITypeRegistry getInstance()
+    static FFITypeRegistry &getInstance()
     {
         static FFITypeRegistry instance;
         return instance;
     }
+
+    FFITypeRegistry(const FFITypeRegistry &) = delete;
+    FFITypeRegistry &operator=(const FFITypeRegistry &) = delete;
 
     static LCBaseTypeInfo parse(BaseTypeData &base_param_data);
     static LCStructTypeInfo parse(StructTypeData &struct_param_data);
@@ -66,6 +68,15 @@ class FFITypeRegistry
         }
         return this->func_call_info_map_.at(label_name);
     }
+    std::vector<LCFuncCallInfo> getLCFuncCallInfoList()
+    {
+        std::vector<LCFuncCallInfo> func_call_info_list;
+        for (const auto &pair : this->func_call_info_map_)
+        {
+            func_call_info_list.push_back(pair.second);
+        }
+        return func_call_info_list;
+    }
 
   private:
     FFITypeRegistry() {};
@@ -75,5 +86,7 @@ class FFITypeRegistry
     std::unordered_map<std::string, LCLibInfo> lib_info_map_;
     std::unordered_map<std::string, LCFuncCallInfo> func_call_info_map_;
 };
+
+extern FFITypeRegistry &TYPE_REGISTRY;
 
 #endif // LIBCALL_TYPE_REGISTRY_HPP

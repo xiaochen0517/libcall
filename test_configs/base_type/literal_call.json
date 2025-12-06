@@ -1,0 +1,43 @@
+{
+  "base_types": [
+    {
+      "label_name": "int_arg1",
+      "type": "literal",
+      "data_type": "int32",
+      "data": 12
+    },
+    {
+      "label_name": "int_arg2",
+      "type": "literal",
+      "data_type": "int32",
+      "data": 12
+    },
+    {
+      "label_name": "int_ret",
+      "type": "literal",
+      "data_type": "int32",
+      "data": 12
+    }
+  ],
+  "struct_types": [],
+  "callbacks": [],
+  "libs": [
+    {
+      "label_name": "liblctest",
+      "lib_path": "./build/liblctest.so"
+    }
+  ],
+  "func_calls": [
+    {
+      "label_name": "iret_iarg_call",
+      "lib_label": "liblctest",
+      "func_name": "_Z14iret_iarg_funcii",
+      "variadic": false,
+      "param_labels": [
+        "int_arg1",
+        "int_arg2"
+      ],
+      "return_label": "int_ret"
+    }
+  ]
+}

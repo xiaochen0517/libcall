@@ -13,7 +13,7 @@ class JsonParser
     JsonParser() {};
     ~JsonParser() {};
 
-    static RootData parse();
+    static RootData parse(const std::string &json_path);
 };
 
 #endif // LIBCALL_PARSER_HPP

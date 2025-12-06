@@ -47,7 +47,8 @@ enable_testing()
 # 收集测试源文件（排除 src/main.cpp）
 file(GLOB_RECURSE TEST_SOURCE_FILES tests/*.cpp)
 file(GLOB_RECURSE LIB_SOURCE_FILES
-    src/util/*.cpp
+    src/utils/*.cpp
+    src/logger/*.cpp
     src/adapter/*.cpp
     include/*.hpp
 )

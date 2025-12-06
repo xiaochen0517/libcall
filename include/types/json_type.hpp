@@ -23,7 +23,8 @@ struct StructTypeData
 struct BaseTypeData
 {
     std::string label_name;
-    std::string type_name;
+    std::string type;
+    std::string data_type;
     nlohmann::json data;
 };
 
@@ -39,6 +40,8 @@ struct FuncCallDataInfo
 {
     std::string label_name;
     std::string lib_label;
+    bool variadic;
+    uint32_t fixed_param_count;
     std::string func_name;
     std::vector<std::string> param_labels;
     std::string return_label;
