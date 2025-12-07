@@ -2,17 +2,20 @@
   "base_types": [
     {
       "label_name": "format",
-      "type_name": "cstring",
+      "type": "pointer",
+      "data_type": "cstring",
       "data": "Hello from %s!\n"
     },
     {
       "label_name": "name",
-      "type_name": "cstring",
+      "type": "pointer",
+      "data_type": "cstring",
       "data": "mas0n1ee"
     },
     {
       "label_name": "print_return",
-      "type_name": "int32",
+      "type": "literal",
+      "data_type": "int32",
       "data": 0
     }
   ],
@@ -29,6 +32,8 @@
       "label_name": "print_hello",
       "lib_label": "glibc",
       "func_name": "printf",
+      "variadic": true,
+      "fixed_param_count": 1,
       "param_labels": [
         "format",
         "name"
