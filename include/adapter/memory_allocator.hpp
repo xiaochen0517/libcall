@@ -18,6 +18,8 @@ class MemoryAllocator
 
     static void *getDoublePointer(void *data_ptr);
 
+    static void deallocate(void *data_ptr);
+
   private:
 };
 

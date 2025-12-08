@@ -158,14 +158,14 @@ void Runner::run(RunParam &param)
 
         if (func_call_info.isVariadic())
         {
-            std::cout << "Preparing variadic cif..." << std::endl;
+            LOGGER.info(std::format("Preparing cif for variadic function call..."));
             ffi_prep_status =
                 ffi_prep_cif_var(&this->cif_, FFI_DEFAULT_ABI, func_call_info.getFixedParamCount(),
                                  this->ffi_types_.size(), this->ffi_return_type_, this->ffi_types_.data());
         }
         else
         {
-            std::cout << "Preparing normal cif..." << std::endl;
+            LOGGER.info(std::format("Preparing cif for non-variadic function call..."));
             ffi_prep_status = ffi_prep_cif(&this->cif_, FFI_DEFAULT_ABI, this->ffi_types_.size(),
                                            this->ffi_return_type_, this->ffi_types_.data());
         }
@@ -175,11 +175,22 @@ void Runner::run(RunParam &param)
             throw std::runtime_error("ffi_prep_cif failed");
         }
 
-        std::cout << "ffi prep cif success" << std::endl;
-
+        LOGGER.info("Calling function via FFI...");
+        LOGGER.info("=============================== Function Call Start ==============================");
         ffi_call(&this->cif_, FFI_FN(function_sym), this->return_value_ptr_, ffi_values_.data());
-        std::cout << "Return value: " << *static_cast<ffi_arg *>(this->return_value_ptr_) << std::endl;
+        LOGGER.info("=============================== Function Call End ==============================");
+        
+        auto return_value = *static_cast<ffi_arg *>(this->return_value_ptr_);
+        
+        if (result_base_type.getType() == "pointer")
+        {
+            LOGGER.info(std::format("Function call completed, return pointer value: 0x{:x}", (uintptr_t)return_value));
+            LOGGER.info(std::format("Function call completed, return uint value: {}", *(uint32_t *)return_value));
+        }
+        else
+        {
+            LOGGER.info(std::format("Function call completed, return value: {}", return_value));
+        }
+        std::cout << std::endl;
     }
-    // release resources
-    free(this->return_value_ptr_);
 }

@@ -1,6 +1,7 @@
 #ifndef LIBCALL_RUNNER_HPP
 #define LIBCALL_RUNNER_HPP
 
+#include "adapter/type_registry.hpp"
 #include <ffi.h>
 #include <string>
 #include <vector>

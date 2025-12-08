@@ -2,21 +2,21 @@
   "base_types": [
     {
       "label_name": "int_arg1",
-      "type": "literal",
+      "type": "pointer",
       "data_type": "int32",
-      "data": 11
+      "data": 12
     },
     {
       "label_name": "int_arg2",
-      "type": "literal",
+      "type": "pointer",
       "data_type": "int32",
-      "data": 22
+      "data": 12
     },
     {
       "label_name": "int_ret",
-      "type": "literal",
+      "type": "pointer",
       "data_type": "int32",
-      "data": 0
+      "data": 12
     }
   ],
   "struct_types": [],
@@ -29,9 +29,9 @@
   ],
   "func_calls": [
     {
-      "label_name": "iret_iarg_call",
+      "label_name": "ipret_iparg_call",
       "lib_label": "liblctest",
-      "func_name": "_Z14iret_iarg_funcii",
+      "func_name": "_Z16ipret_iparg_funcPiS_",
       "variadic": false,
       "param_labels": [
         "int_arg1",

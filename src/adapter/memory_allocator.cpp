@@ -59,3 +59,11 @@ void *MemoryAllocator::getDoublePointer(void *data_ptr)
     *double_ptr = data_ptr;
     return static_cast<void *>(double_ptr);
 }
+
+void MemoryAllocator::deallocate(void *data_ptr)
+{
+    if (data_ptr)
+    {
+        free(data_ptr);
+    }
+}

@@ -78,6 +78,8 @@ class FFITypeRegistry
         return func_call_info_list;
     }
 
+    void clean();
+
   private:
     FFITypeRegistry() {};
 

@@ -89,3 +89,42 @@ void FFITypeRegistry::registerData(std::vector<LCFuncCallInfo> lc_func_call_list
                                 lc_func_call_info.getLibLabel()));
     }
 }
+
+void FFITypeRegistry::clean()
+{
+    if (!this->lib_info_map_.empty())
+    {
+        for (auto &pair : this->lib_info_map_)
+        {
+            LCLibInfo &lib_info = pair.second;
+            if (lib_info.getLibHandle() != nullptr)
+            {
+                dlclose(lib_info.getLibHandle());
+            }
+        }
+        this->lib_info_map_.clear();
+    }
+    if (!this->base_type_info_map_.empty())
+    {
+        for (auto &pair : this->base_type_info_map_)
+        {
+            LCBaseTypeInfo &base_type_info = pair.second;
+            MemoryAllocator::deallocate(base_type_info.getDoubleDataPtr());
+            MemoryAllocator::deallocate(base_type_info.getDataPtr());
+        }
+        this->base_type_info_map_.clear();
+    }
+    // if (!this->struct_type_info_map_.empty())
+    // {
+    //     for (auto &pair : this->struct_type_info_map_)
+    //     {
+    //         LCStructTypeInfo &struct_type_info = pair.second;
+    //         MemoryAllocator::deallocate(struct_type_info.getDataPtr());
+    //     }
+    //     this->struct_type_info_map_.clear();
+    // }
+    if (!this->func_call_info_map_.empty())
+    {
+        this->func_call_info_map_.clear();
+    }
+}

@@ -16,6 +16,20 @@
       "miDebuggerPath": "/usr/bin/gdb"
     },
     {
+      "name": "Build and Debug Test",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/libcall-tests",
+      "args": [],
+      "environment": [],
+      "preLaunchTask": "Build Project",
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb"
+    },
+    {
       "name": "Debug Only",
       "type": "cppdbg",
       "request": "launch",
