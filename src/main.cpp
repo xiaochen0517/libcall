@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     std::cout << "========" << std::endl;
     std::cout << std::endl;
 
-    CLI::App app{"Lib Call: A simple tool to call dynamic libraries using JSON."};
+    CLI::App app{PROJECT_DESCRIPTION};
 
     uint16_t port = 4221;
     size_t threads = 10;
