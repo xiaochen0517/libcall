@@ -19,6 +19,9 @@ void Logger::log(const std::string &message, LogLevel level)
 
     switch (level)
     {
+    case LogLevel::DEBUG:
+        prefix += "[DEBUG]";
+        break;
     case LogLevel::INFO:
         prefix += "[INFO]";
         break;
@@ -40,6 +43,11 @@ void Logger::log(const std::string &message, LogLevel level)
     {
         std::cout << std::format("{} {}", prefix, message) << std::endl;
     }
+}
+
+void Logger::debug(const std::string &message)
+{
+    log(message, LogLevel::DEBUG);
 }
 
 void Logger::info(const std::string &message)

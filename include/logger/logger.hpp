@@ -18,6 +18,7 @@ class Logger
 
     enum class LogLevel
     {
+        DEBUG,
         INFO,
         WARN,
         ERROR
@@ -25,6 +26,7 @@ class Logger
 
     void log(const std::string &message, LogLevel level = LogLevel::INFO);
 
+    void debug(const std::string &message);
     void info(const std::string &message);
     void warn(const std::string &message);
     void error(const std::string &message);

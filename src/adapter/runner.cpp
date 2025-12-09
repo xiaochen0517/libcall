@@ -51,7 +51,7 @@ void *mallocDataPtr(const std::string &type, const std::string &value)
 
 void parseJsonAndRegisterTypes(const std::string &json_path)
 {
-    LOGGER.info(std::format("Current json config path: {}", json_path));
+    LOGGER.debug(std::format("Current json config path: {}", json_path));
 
     RootData root_data = JsonParser::parse(json_path);
 
@@ -88,12 +88,12 @@ void Runner::run(RunParam &param)
      * 动态测试（存放测试数据）
      */
     std::cout << std::endl;
-    LOGGER.info("Start to execute function calls...");
+    LOGGER.debug("Start to execute function calls...");
 
     auto lc_func_call_info_list = TYPE_REGISTRY.getLCFuncCallInfoList();
     for (LCFuncCallInfo func_call_info : lc_func_call_info_list)
     {
-        LOGGER.info(std::format("Execute function call, label: {}; symbol: {};", func_call_info.getLabelName(),
+        LOGGER.debug(std::format("Execute function call, label: {}; symbol: {};", func_call_info.getLabelName(),
                                 func_call_info.getFuncName()));
 
         LCLibInfo glibc_info = TYPE_REGISTRY.getLibInfo(func_call_info.getLibLabel());
@@ -123,17 +123,17 @@ void Runner::run(RunParam &param)
             }
         }
 
-        LOGGER.info(std::format("FFI Types Size: {}", this->ffi_types_.size()));
-        LOGGER.info(std::format("FFI Values Size: {}", this->ffi_values_.size()));
+        LOGGER.debug(std::format("FFI Types Size: {}", this->ffi_types_.size()));
+        LOGGER.debug(std::format("FFI Values Size: {}", this->ffi_values_.size()));
 
-        LOGGER.info("Preparing to call function via FFI...");
+        LOGGER.debug("Preparing to call function via FFI...");
         for (void *ffi_value_ptr : this->ffi_values_)
         {
-            LOGGER.info(std::format("FFI Value Ptr: 0x{:x}", (uintptr_t)ffi_value_ptr));
+            LOGGER.debug(std::format("FFI Value Ptr: 0x{:x}", (uintptr_t)ffi_value_ptr));
         }
 
         LCBaseTypeInfo result_base_type = TYPE_REGISTRY.getBaseTypeInfo(func_call_info.getReturnLabel());
-        LOGGER.info(std::format("Return Type Label: {}", result_base_type.getLabelName()));
+        LOGGER.debug(std::format("Return Type Label: {}", result_base_type.getLabelName()));
         if (result_base_type.getType() == "literal")
         {
             this->ffi_return_type_ = result_base_type.getFFITypePtr();
@@ -148,8 +148,8 @@ void Runner::run(RunParam &param)
         {
             throw std::runtime_error("Unsupported return type: " + result_base_type.getType());
         }
-        LOGGER.info(std::format("FFI Return Type Ptr: 0x{:x}", (uintptr_t)this->ffi_return_type_));
-        LOGGER.info(std::format("Return Value Ptr: 0x{:x}", (uintptr_t)this->return_value_ptr_));
+        LOGGER.debug(std::format("FFI Return Type Ptr: 0x{:x}", (uintptr_t)this->ffi_return_type_));
+        LOGGER.debug(std::format("Return Value Ptr: 0x{:x}", (uintptr_t)this->return_value_ptr_));
 
         /*
          * 开始调用
@@ -158,14 +158,14 @@ void Runner::run(RunParam &param)
 
         if (func_call_info.isVariadic())
         {
-            LOGGER.info(std::format("Preparing cif for variadic function call..."));
+            LOGGER.debug(std::format("Preparing cif for variadic function call..."));
             ffi_prep_status =
                 ffi_prep_cif_var(&this->cif_, FFI_DEFAULT_ABI, func_call_info.getFixedParamCount(),
                                  this->ffi_types_.size(), this->ffi_return_type_, this->ffi_types_.data());
         }
         else
         {
-            LOGGER.info(std::format("Preparing cif for non-variadic function call..."));
+            LOGGER.debug(std::format("Preparing cif for non-variadic function call..."));
             ffi_prep_status = ffi_prep_cif(&this->cif_, FFI_DEFAULT_ABI, this->ffi_types_.size(),
                                            this->ffi_return_type_, this->ffi_types_.data());
         }
@@ -175,21 +175,21 @@ void Runner::run(RunParam &param)
             throw std::runtime_error("ffi_prep_cif failed");
         }
 
-        LOGGER.info("Calling function via FFI...");
-        LOGGER.info("=============================== Function Call Start ==============================");
+        LOGGER.debug("Calling function via FFI...");
+        LOGGER.debug("=============================== Function Call Start ==============================");
         ffi_call(&this->cif_, FFI_FN(function_sym), this->return_value_ptr_, ffi_values_.data());
-        LOGGER.info("=============================== Function Call End ==============================");
+        LOGGER.debug("=============================== Function Call End ==============================");
         
         auto return_value = *static_cast<ffi_arg *>(this->return_value_ptr_);
         
         if (result_base_type.getType() == "pointer")
         {
-            LOGGER.info(std::format("Function call completed, return pointer value: 0x{:x}", (uintptr_t)return_value));
-            LOGGER.info(std::format("Function call completed, return uint value: {}", *(uint32_t *)return_value));
+            LOGGER.debug(std::format("Function call completed, return pointer value: 0x{:x}", (uintptr_t)return_value));
+            LOGGER.debug(std::format("Function call completed, return uint value: {}", *(uint32_t *)return_value));
         }
         else
         {
-            LOGGER.info(std::format("Function call completed, return value: {}", return_value));
+            LOGGER.debug(std::format("Function call completed, return value: {}", return_value));
         }
         std::cout << std::endl;
     }

@@ -47,10 +47,10 @@ void FFITypeRegistry::registerData(std::vector<LCBaseTypeInfo> lc_type_list)
         {
             throw std::runtime_error("Duplicate base label name registration: " + lc_type_info.getLabelName());
         }
-        LOGGER.info(std::format("Add Base Type: {}->{};", lc_type_info.getLabelName(), lc_type_info.getDataType()));
+        LOGGER.debug(std::format("Add Base Type: {}->{};", lc_type_info.getLabelName(), lc_type_info.getDataType()));
         this->base_type_info_map_.insert({lc_type_info.getLabelName(), lc_type_info});
     }
-    LOGGER.info(std::format("Base Type Info Map Size: {}", this->base_type_info_map_.size()));
+    LOGGER.debug(std::format("Base Type Info Map Size: {}", this->base_type_info_map_.size()));
 }
 void FFITypeRegistry::registerData(std::vector<LCStructTypeInfo> lc_struct_type_list)
 {
@@ -72,7 +72,7 @@ void FFITypeRegistry::registerData(std::vector<LCLibInfo> lc_lib_list)
             throw std::runtime_error("Duplicate lib label name registration: " + lc_lib_info.getLabelName());
         }
         this->lib_info_map_.insert({lc_lib_info.getLabelName(), lc_lib_info});
-        LOGGER.info(
+        LOGGER.debug(
             std::format("Registered library: {} at path: {}", lc_lib_info.getLabelName(), lc_lib_info.getLibPath()));
     }
 }
@@ -85,7 +85,7 @@ void FFITypeRegistry::registerData(std::vector<LCFuncCallInfo> lc_func_call_list
             throw std::runtime_error("Duplicate func call label name registration: " + lc_func_call_info.getFuncName());
         }
         this->func_call_info_map_.insert({lc_func_call_info.getFuncName(), lc_func_call_info});
-        LOGGER.info(std::format("Registered function call: {} for library label: {}", lc_func_call_info.getFuncName(),
+        LOGGER.debug(std::format("Registered function call: {} for library label: {}", lc_func_call_info.getFuncName(),
                                 lc_func_call_info.getLibLabel()));
     }
 }
